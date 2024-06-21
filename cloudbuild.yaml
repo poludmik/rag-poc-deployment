@@ -17,12 +17,13 @@ steps:
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'Deploying to Cloud Run'
+  waitFor: ["Pushing container image"]
   args: [
     'run',
     'deploy',
     'temus-case-study-service',
     '--image',
-    'europe-west1-docker.pkg.dev/$PROJECT_ID/temus-case-study-registry/temus-case-study-image',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image:latest',
     '--region',
     'europe-west1',
     '--platform',
