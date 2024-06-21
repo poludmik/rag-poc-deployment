@@ -15,4 +15,5 @@ steps:
     'push',
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image'
   ]
-logging: 'CLOUD_LOGGING_ONLY'
+options:
+  logging: CLOUD_LOGGING_ONLY
