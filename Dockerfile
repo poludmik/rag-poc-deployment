@@ -1,13 +1,8 @@
-FROM python:3.11-slim
-
-# install python
-RUN apt update && \
-    apt install --no-install-recommends -y build-essential gcc && \
-    apt clean && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt requirements.txt
-COPY main.py main.py
+FROM python:3.10
 WORKDIR /
-RUN pip install -r requirements.txt --no-cache-dir
+COPY ./requirements.txt /code/requirements.txt
 
-ENTRYPOINT ["python", "-u", "main.py"]
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY . .
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

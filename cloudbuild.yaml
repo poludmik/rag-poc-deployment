@@ -7,13 +7,26 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image',
     '-f',
-    'Dockerfile'
+    'streamlit_app.dockerfile'
   ]
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Push container image'
+  id: 'Pushing container image'
   args: [
     'push',
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image'
+  ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Deploying to Cloud Run'
+  args: [
+    'run',
+    'deploy',
+    'temus-case-study-service',
+    '--image',
+    'europe-west1-docker.pkg.dev/$PROJECT_ID/temus-case-study-registry/temus-case-study-image',
+    '--region',
+    'europe-west1',
+    '--platform',
+    'managed',
   ]
 options:
   logging: CLOUD_LOGGING_ONLY
