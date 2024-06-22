@@ -28,7 +28,9 @@ steps:
     'europe-west1',
     '--platform',
     'managed',
-    '--allow-unauthenticated'
+    '--allow-unauthenticated',
+    '--memory', 
+    '4Gi'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'
