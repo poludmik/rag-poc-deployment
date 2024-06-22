@@ -2,3 +2,4 @@ venv/
 GCP/
 tests/__pycache__/
 __pycache__/
+zephyr-7b-beta.Q4_0.gguf
