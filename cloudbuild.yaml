@@ -22,27 +22,18 @@ steps:
   args:
     - '-c'
     - |
-      INSTANCE_NAME="backend-instance"
-      PROJECT_ID="temusrag"
-      IMAGE_NAME="europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest"
-      ZONE="europe-west1-b"
-      MACHINE_TYPE="n1-standard-4"
-      GPU_TYPE="nvidia-tesla-k80"
-      GPU_COUNT="1"
-      # Create the VM instance with GPU
-      gcloud compute instances create-with-container $INSTANCE_NAME \
-        --project=$PROJECT_ID \
-        --zone=$ZONE \
-        --machine-type=$MACHINE_TYPE \
-        --accelerator type=$GPU_TYPE,count=$GPU_COUNT \
-        --container-image=$IMAGE_NAME \
+      gcloud compute instances create-with-container backend-instance \
+        --project=temusrag \
+        --zone=europe-west1-b \
+        --machine-type=n1-standard-4 \
+        --accelerator type=nvidia-tesla-k80,count=1 \
+        --container-image=europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest \
         --boot-disk-size=50GB \
         --maintenance-policy=TERMINATE \
         --restart-on-failure
-      # Allowing HTTP and HTTPS traffic
-      gcloud compute instances add-tags $INSTANCE_NAME \
+      gcloud compute instances add-tags backend-instance \
         --tags=http-server,https-server \
-        --zone=$ZONE
+        --zone=europe-west1-b
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Building frontend container image'
