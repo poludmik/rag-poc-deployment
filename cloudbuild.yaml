@@ -1,29 +1,62 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Building container image'
+  id: 'Building backend container image'
   args: [
     'build',
     '.',
     '-t',
-    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend',
     '-f',
-    'streamlit_app.dockerfile'
+    'backend.dockerfile'
   ]
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Pushing container image'
+  id: 'Pushing backend container image'
   args: [
     'push',
-    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image'
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'Deploying to Cloud Run'
-  waitFor: ["Pushing container image"]
+  waitFor: ["Pushing backend container image"]
   args: [
     'run',
     'deploy',
-    'temus-case-study-service',
+    'backend',
     '--image',
-    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/temus-case-study-image:latest',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest',
+    '--region',
+    'europe-west1',
+    '--platform',
+    'managed',
+    '--allow-unauthenticated'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Building container image'
+  waitFor: ["Deploying backend to Cloud Run"]
+  args: [
+    'build',
+    '.',
+    '-t',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/frontend',
+    '-f',
+    'frontend.dockerfile'
+  ]
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Pushing frontend container image'
+  args: [
+    'push',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/frontend'
+  ]
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Deploying frontend to Cloud Run'
+  waitFor: ["Pushing frontend container image"]
+  args: [
+    'run',
+    'deploy',
+    'frontend',
+    '--image',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/frontend:latest',
     '--region',
     'europe-west1',
     '--platform',

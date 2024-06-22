@@ -19,6 +19,9 @@ RUN pip3 install -r requirements.txt
 # Copy the rest of the application code into the image
 COPY . .
 
+# Set environment variables (if the automatic detection doesn't work later)
+# ENV BACKEND="https://backend-c4xxjrjd3q-ew.a.run.app"
+
 # Expose the port
 EXPOSE 8080
 

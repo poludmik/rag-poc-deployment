@@ -3,3 +3,6 @@ uvicorn>=0.15.0,<0.16.0
 altair
 pandas
 streamlit
+PyMuPDF
+fitz
+google-cloud-run
