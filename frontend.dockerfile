@@ -12,7 +12,8 @@ COPY requirements_frontend.txt /app/requirements_frontend.txt
 COPY streamlit_app.py /app/streamlit_app.py
 COPY GCP/key_service_account.json /app/GCP/key_service_account.json
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_frontend.txt
+# RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_frontend.txt
+RUN pip install --no-cache-dir --upgrade -r requirements_frontend.txt
 
 # Set environment variables (if the automatic detection doesn't work later)
 # ENV BACKEND="https://backend-c4xxjrjd3q-ew.a.run.app"

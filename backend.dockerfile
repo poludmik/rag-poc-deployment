@@ -11,7 +11,8 @@ WORKDIR /app
 COPY requirements_backend.txt /app/requirements_backend.txt
 COPY backend.py /app/backend.py
 
-RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_backend.txt
+# RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_backend.txt
+RUN pip install --no-cache-dir --upgrade -r requirements_backend.txt
 
 EXPOSE 8080
 CMD exec uvicorn --port 8080 --host 0.0.0.0 backend:app
