@@ -16,7 +16,7 @@ steps:
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: 'Deploying to Cloud Run'
+  id: 'Deploying backend to Cloud Run'
   waitFor: ["Pushing backend container image"]
   args: [
     'run',
@@ -32,7 +32,7 @@ steps:
   ]
 
 - name: 'gcr.io/cloud-builders/docker'
-  id: 'Building container image'
+  id: 'Building frontend container image'
   waitFor: ["Deploying backend to Cloud Run"]
   args: [
     'build',
