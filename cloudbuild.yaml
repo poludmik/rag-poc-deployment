@@ -30,7 +30,7 @@ steps:
     'managed',
     '--allow-unauthenticated',
     '--memory', 
-    '4Gi'
+    '8Gi'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'
