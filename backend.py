@@ -10,32 +10,32 @@ from pydantic import BaseModel
 from llama_cpp import Llama
 
 
-def generate_text(
-    prompt="Who is the CEO of Apple?",
-    max_tokens=256,
-    temperature=0.1,
-    top_p=0.5,
-    echo=False,
-    stop=["#"],
-):
-    output = llm(
-        prompt,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        top_p=top_p,
-        echo=echo,
-        stop=stop,
-    )
-    output_text = output["choices"][0]["text"].strip()
-    return output_text
+# def generate_text(
+#     prompt="Who is the CEO of Apple?",
+#     max_tokens=256,
+#     temperature=0.1,
+#     top_p=0.5,
+#     echo=False,
+#     stop=["#"],
+# ):
+#     output = llm(
+#         prompt,
+#         max_tokens=max_tokens,
+#         temperature=temperature,
+#         top_p=top_p,
+#         echo=echo,
+#         stop=stop,
+#     )
+#     output_text = output["choices"][0]["text"].strip()
+#     return output_text
 
 
-def generate_prompt_from_template(input):
-    chat_prompt_template = f"""<|im_start|>system
-You are a helpful chatbot.<|im_end|>
-<|im_start|>user
-{input}<|im_end|>"""
-    return chat_prompt_template
+# def generate_prompt_from_template(input):
+#     chat_prompt_template = f"""<|im_start|>system
+# You are a helpful chatbot.<|im_end|>
+# <|im_start|>user
+# {input}<|im_end|>"""
+#     return chat_prompt_template
 
 
 app = FastAPI()
@@ -67,12 +67,12 @@ async def answer(request: QuestionRequest):
         answer = get_answer(request.filename, request.question)
         print("answer:", answer)
 
-        llm_answer = generate_text(
-            request.question,
-            max_tokens=356,
-            )
-
-        answer += llm_answer
+        # llm_answer = generate_text(
+        #     request.question,
+        #     max_tokens=356,
+        #     )
+        # answer += llm_answer
+        
         print("answer:", answer)
         return {"filename": request.filename, "question": request.question, "answer": answer}
     except Exception as e:

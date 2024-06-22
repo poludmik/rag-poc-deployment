@@ -16,28 +16,37 @@ steps:
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: 'Deploying backend to Cloud Run'
+  id: 'Deploying backend to Compute Engine'
   waitFor: ["Pushing backend container image"]
-  args: [
-    'run',
-    'deploy',
-    'backend',
-    '--image',
-    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest',
-    '--region',
-    'europe-west1',
-    '--platform',
-    'managed',
-    '--allow-unauthenticated',
-    '--memory', 
-    '8Gi',
-    '--cpu',
-    '2'
-  ]
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      INSTANCE_NAME="backend-instance"
+      PROJECT_ID="temusrag"
+      IMAGE_NAME="europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest"
+      ZONE="europe-west1-b"
+      MACHINE_TYPE="n1-standard-4"
+      GPU_TYPE="nvidia-tesla-k80"
+      GPU_COUNT="1"
+      # Create the VM instance with GPU
+      gcloud compute instances create-with-container $INSTANCE_NAME \
+        --project=$PROJECT_ID \
+        --zone=$ZONE \
+        --machine-type=$MACHINE_TYPE \
+        --accelerator type=$GPU_TYPE,count=$GPU_COUNT \
+        --container-image=$IMAGE_NAME \
+        --boot-disk-size=50GB \
+        --maintenance-policy=TERMINATE \
+        --restart-on-failure
+      # Allowing HTTP and HTTPS traffic
+      gcloud compute instances add-tags $INSTANCE_NAME \
+        --tags=http-server,https-server \
+        --zone=$ZONE
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Building frontend container image'
-  waitFor: ["Deploying backend to Cloud Run"]
+  waitFor: ["Deploying backend to Compute Engine"]
   args: [
     'build',
     '.',
