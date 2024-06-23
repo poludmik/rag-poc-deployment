@@ -41,18 +41,25 @@ def get_answer(filename: str, question: str) -> str:
     db = FAISS.load_local(f"faiss_dbs/indexes/{folder}", GTEEmbeddings().embed_documents, allow_dangerous_deserialization=True)
     retriever = db.as_retriever(k=3)
     docs = retriever.invoke(question)
+    print("Retrieved documents:", len(docs))
 
     # answer = "\n\n".join([doc.page_content for doc in docs])
 
     instruction = prompt_template.format(user_question=question, retrieved_document=docs[0].page_content)
 
     # request on http://34.168.84.98:8000/answer/ with json {"instruction": instruction}. Will return {"instruction": instruction, "answer": answer}.
-    response = requests.post("http://34.168.84.98:8000/answer/", 
+    response = requests.post("http://34.83.196.140:8000/answer/", 
                              headers={"Content-Type": "application/json"}, 
                              data=json.dumps({"instruction": instruction}),
                              timeout=30)
 
     if response.status_code != 200:
+        print("FIRST response.status_code:", response.status_code)
+        response = requests.post("http://34.168.84.98:8000/answer/",
+                                    headers={"Content-Type": "application/json"},
+                                    data=json.dumps({"instruction": instruction}),
+                                    timeout=30)
+        print("SECOND response.status_code:", response.status_code)
         raise ValueError(f"Request failed with status {response.status_code}: {response.text}")
     response_data = response.json()
     answer = response_data.get("answer", "No answer produced.")
