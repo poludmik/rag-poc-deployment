@@ -28,17 +28,18 @@ Retrieved Document:
 Answer: [/INST]
 """
 
+# input_prompt = prompt_template.format(user_question=instruction, retrieved_document=document)
+
 
 app = FastAPI()
 
-def get_answer(instruction: str, document: str) -> str:
+def get_answer(instruction: str) -> str:
     """Run LLM inference."""
     if llm is None:
         raise ValueError("LLM has not been initialized.")
     
-    input_prompt = prompt_template.format(user_question=instruction, retrieved_document=document)
     sampling_params = SamplingParams(temperature=0.3, top_p=0.95, max_tokens=512)
-    outputs = llm.generate([input_prompt], sampling_params)
+    outputs = llm.generate([instruction], sampling_params)
     answer = outputs[0].outputs[0].text
     return answer
 
@@ -50,17 +51,15 @@ async def root():
 
 class QuestionRequest(BaseModel):
     instruction: str
-    document: str
 
 @app.post("/answer/")
 async def answer(request: QuestionRequest):
     """Endpoint for generating text."""
     try:
         print("instruction:", request.instruction)
-        print("document:", request.document)
-        answer = get_answer(request.instruction, request.document)
+        answer = get_answer(request.instruction)
         print("answer:", answer)
-        return {"instruction": request.instruction, "document": request.document, "answer": answer}
+        return {"instruction": request.instruction, "answer": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

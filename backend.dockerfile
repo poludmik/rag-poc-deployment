@@ -10,7 +10,7 @@ WORKDIR /app
 
 COPY requirements_backend.txt /app/requirements_backend.txt
 COPY backend.py /app/backend.py
-COPY download_the_model.py /app/download_the_model.py
+# COPY download_the_model.py /app/download_the_model.py
 
 # RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_backend.txt
 RUN pip install --no-cache-dir --upgrade -r requirements_backend.txt

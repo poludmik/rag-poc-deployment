@@ -16,36 +16,24 @@ steps:
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend'
   ]
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: 'Deploying backend to Compute Engine'
+  id: 'Deploying backend to Cloud Run'
   waitFor: ["Pushing backend container image"]
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      gcloud compute instances create-with-container backend-instance-ce \
-        --project=temusrag \
-        --zone=europe-west1-b \
-        --machine-type=e2-medium \
-        --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
-        --maintenance-policy=MIGRATE \
-        --provisioning-model=STANDARD \
-        --service-account=328408150766-compute@developer.gserviceaccount.com \
-        --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
-        --tags=http-server,https-server,lb-health-check \
-        --image=projects/cos-cloud/global/images/cos-101-17162-463-42 \
-        --boot-disk-size=50GB \
-        --boot-disk-type=pd-balanced \
-        --boot-disk-device-name=backend-instance-ce \
-        --container-image=europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest \
-        --container-restart-policy=always \
-        --no-shielded-secure-boot \
-        --shielded-vtpm \
-        --shielded-integrity-monitoring \
-        --labels=goog-ec-src=vm_add-gcloud,container-vm=cos-101-17162-463-42
+  args: [
+    'run',
+    'deploy',
+    'backend',
+    '--image',
+    'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend:latest',
+    '--region',
+    'europe-west1',
+    '--platform',
+    'managed',
+    '--allow-unauthenticated',
+  ]
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Building frontend container image'
-  waitFor: ["Deploying backend to Compute Engine"]
+  waitFor: ["Deploying backend to Cloud Run"]
   args: [
     'build',
     '.',
