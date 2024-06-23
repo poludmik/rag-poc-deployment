@@ -89,8 +89,12 @@ if question := st.chat_input("What is up?"):
     # if json.loads(response.content.decode())["is_image"] == True:
     #     image_data = base64.b64decode(json.loads(response.content.decode())["image_str"])
     #     img = st.image(image_data)
-        st.write(json.loads(response.content.decode())["answer"].replace("\n", "  \n")) # Streamlit write only recognizes 'word  \n' and not 'word\n'... (Uses markdown)
-    
+        print("RESPONSE CONTENT:", json.loads(response.content.decode()))
+        try:
+            st.write(json.loads(response.content.decode())["answer"].replace("\n", "  \n")) # Streamlit write only recognizes 'word  \n' and not 'word\n'... (Uses markdown)
+        except Exception as e:
+            st.write("An error occured during answering the question.")
+            raise e
     # st.markdown(question)
     # st.text(json.loads(response.content.decode())["answer"]) # Better for printing dataframes
     # st.text("This is a test answer.")

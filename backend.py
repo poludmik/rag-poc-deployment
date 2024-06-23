@@ -37,15 +37,22 @@ def get_answer(filename: str, question: str) -> str:
     # Get the index
     get_index(filename)
 
+    print("got index")
+
     folder = filename.split(".")[0]
+    print("folder:", folder)
     db = FAISS.load_local(f"faiss_dbs/indexes/{folder}", GTEEmbeddings().embed_documents, allow_dangerous_deserialization=True)
+    print("db:", db)
     retriever = db.as_retriever(k=3)
+    print("retriever:", retriever)
     docs = retriever.invoke(question)
     print("Retrieved documents:", len(docs))
 
     # answer = "\n\n".join([doc.page_content for doc in docs])
 
     instruction = prompt_template.format(user_question=question, retrieved_document=docs[0].page_content)
+
+    print("instruction:", instruction)
 
     # request on http://34.168.84.98:8000/answer/ with json {"instruction": instruction}. Will return {"instruction": instruction, "answer": answer}.
     response = requests.post("http://34.83.196.140:8000/answer/", 
@@ -172,19 +179,26 @@ async def create_and_upload(file: UploadFile = File(...)):
 
             # create an index and upload it to the bucket also
             raw_documents = PyMuPDFLoader(file_path_local).load_and_split()
+            print("len(raw_documents):", len(raw_documents))
 
             texts = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0).split_documents(raw_documents)
+            print("len(texts):", len(texts))
 
             db = FAISS.from_documents(texts, GTEEmbeddings())
+            print("db:", db)
             store_path = f"{file.filename.split('.')[0]}"
-            db.save_local(f'faiss_dbs/indexes/{store_path}')
-            # upload the index folder with two files to the bucket
             print("store_path:", store_path)
+            db.save_local(f'faiss_dbs/indexes/{store_path}')
+            print("Index saved locally.")
+            # upload the index folder with two files to the bucket
             for file_name in os.listdir(f'faiss_dbs/indexes/{store_path}'):
                 print("file_name:", file_name)
                 blob = bucket.blob(f"indexes/{store_path}/{file_name}")
+                print("blob")
                 blob.upload_from_filename(f'faiss_dbs/indexes/{store_path}/{file_name}')
                 print(f"File {store_path} uploaded to bucket.")
+
+            print("After for loop.")
 
             # remove the local files
             os.remove(f'faiss_dbs/indexes/{store_path}/index.pkl')
