@@ -1,4 +1,3 @@
-cd temus-case-study
 nohup uvicorn --host 0.0.0.0 --port 8000 gpu_inference_server:app &
 
 # make executable:

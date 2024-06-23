@@ -7,7 +7,7 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/backend',
     '-f',
-    'backend.dockerfile'
+    'dockerfiles/backend.dockerfile'
   ]
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Pushing backend container image'
@@ -40,7 +40,7 @@ steps:
     '-t',
     'europe-west1-docker.pkg.dev/temusrag/temus-case-study-registry/frontend',
     '-f',
-    'frontend.dockerfile'
+    'dockerfiles/frontend.dockerfile'
   ]
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Pushing frontend container image'

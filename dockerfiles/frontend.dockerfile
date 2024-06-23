@@ -8,12 +8,12 @@ RUN mkdir /app
 
 WORKDIR /app
 
-COPY requirements_frontend.txt /app/requirements_frontend.txt
-COPY streamlit_app.py /app/streamlit_app.py
+COPY requirements/requirements_frontend.txt /app/requirements/requirements_frontend.txt
+COPY frontend.py /app/frontend.py
 # COPY GCP/key_service_account.json /app/GCP/key_service_account.json
 
 # RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_frontend.txt
-RUN pip install --no-cache-dir --upgrade -r requirements_frontend.txt
+RUN pip install --no-cache-dir --upgrade -r requirements/requirements_frontend.txt
 
 # Set environment variables (if the automatic detection doesn't work later)
 # ENV BACKEND="https://backend-c4xxjrjd3q-ew.a.run.app"
@@ -22,4 +22,4 @@ RUN pip install --no-cache-dir --upgrade -r requirements_frontend.txt
 
 EXPOSE 8080
 
-CMD ["streamlit", "run", "streamlit_app.py", "--server.port", "8080"]
+CMD ["streamlit", "run", "frontend.py", "--server.port", "8080"]

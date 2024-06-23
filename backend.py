@@ -1,5 +1,4 @@
 import json
-import random
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import requests
@@ -36,7 +35,7 @@ def get_answer(filename: str, question: str) -> str:
     answer = response_data.get("answer", "No answer produced.")
 
     print("type(answer):", type(answer))
-    
+
     return answer
 
 @app.get("/")
