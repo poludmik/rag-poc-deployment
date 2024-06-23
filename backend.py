@@ -145,6 +145,7 @@ class GTEEmbeddings:
 
     def __init__(self):
         self.model = SentenceTransformer('Alibaba-NLP/gte-base-en-v1.5', trust_remote_code=True)
+        # self.model = SentenceTransformer('Mihaiii/gte-micro', trust_remote_code=True)
         
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         return self.model.encode(texts)
@@ -175,7 +176,7 @@ async def create_and_upload(file: UploadFile = File(...)):
             bucket = storage_client.bucket("bucket-temus-test-case")
             blob = bucket.blob(f"pdfs/{file.filename}")
             blob.upload_from_filename(file_path_local)
-            print(f"File {file.filename} uploaded to bucket.")
+            print(f"(1) File {file.filename} uploaded to bucket.")
 
             # create an index and upload it to the bucket also
             raw_documents = PyMuPDFLoader(file_path_local).load_and_split()
@@ -196,7 +197,7 @@ async def create_and_upload(file: UploadFile = File(...)):
                 blob = bucket.blob(f"indexes/{store_path}/{file_name}")
                 print("blob")
                 blob.upload_from_filename(f'faiss_dbs/indexes/{store_path}/{file_name}')
-                print(f"File {store_path} uploaded to bucket.")
+                print(f"(2) File {store_path} uploaded to bucket.")
 
             print("After for loop.")
 
