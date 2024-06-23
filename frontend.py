@@ -18,11 +18,12 @@ def get_backend_url():
     return name
 
 url = get_backend_url()
+# url = "http://127.0.0.1:8000/"
 # url = "https://backend-c4xxjrjd3q-ew.a.run.app"
 
-upload_url = url + '/upload_table'
+upload_url = url + '/create_and_upload'
 answer_url = url + '/answer/'
-list_url = url + '/show_available_tables'
+list_url = url + '/list_pdfs'
 get_table_url = url + '/get_table'
 
 st.set_page_config(layout="wide")
@@ -30,9 +31,9 @@ st.write("""
 # Temus RAG demo
 """)
 
-# dict_with_available = json.loads(requests.get(list_url).text)
-# dict_with_available["answer"] = [s.replace("table_storage/", "") for s in dict_with_available["answer"]]
-dict_with_available = {"answer": ["McDonalds.pdf", "Apple.pdf"]}
+dict_with_available = json.loads(requests.get(list_url).text)
+dict_with_available["answer"] = [s for s in dict_with_available["answer"]]
+# dict_with_available = {"answer": ["McDonalds.pdf", "Apple.pdf"]}
 selectbox = st.sidebar.selectbox(
     "Select an already uploaded PDF file:",
     dict_with_available["answer"]
@@ -47,18 +48,15 @@ if 'current_file_name' not in st.session_state:
 file = st.sidebar.file_uploader("Or upload a new file:", type=["pdf"])
 if file is not None:
     if st.sidebar.button("Upload file"):
-        st.write("file uploaded succesfully")
-        # resp = requests.post(upload_url, files={'file': file})
-        # if resp.status_code == 200:
-        #     st.write("file uploaded succesfully")
-        #     st.session_state.current_file_name = file.name
-        #     st.session_state.selectbox_value = file.name
-        st.session_state.current_file_name = file.name
-        st.session_state.selectbox_value = file.name
-        print("(Upload) Changed file to:", st.session_state.current_file_name)
-        # else:
-        #     print(resp.text)
-        #     st.write("An error occured during file upload!")
+        resp = requests.post(upload_url, files={'file': file})
+        if resp.status_code == 200:
+            st.write("File uploaded succesfully")
+            st.session_state.current_file_name = file.name
+            st.session_state.selectbox_value = file.name
+            print("(Upload) Changed file to:", st.session_state.current_file_name)
+        else:
+            print(resp.text)
+            st.write("An error occured during file upload!")
 
 if selectbox != st.session_state.selectbox_value:
     # Update session state with new selectbox value

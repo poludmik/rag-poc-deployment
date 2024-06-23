@@ -29,6 +29,10 @@ steps:
     '--platform',
     'managed',
     '--allow-unauthenticated',
+    '--memory', 
+    '8Gi',
+    '--cpu',
+    '2'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'

@@ -1,4 +1,7 @@
-fastapi>=0.108.0
+fastapi>=0.109.1
 uvicorn>=0.25.0
-pydantic
-requests
+pydantic==2.7.4
+requests==2.32.3
+langchain==0.2.5
+langchain_community==0.2.5
+sentence_transformers>=2.7.0
