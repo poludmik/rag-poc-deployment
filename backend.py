@@ -71,7 +71,7 @@ def get_answer(filename: str, question: str, model: str) -> str:
 
     if "gpt" in model:
         print("Using GPT model.")
-        return "gpt-3.5-turbo-0125 answer:\n" + get_response_from_openai(instruction)
+        return get_response_from_openai(instruction)
 
     instruction = "<s>[INST] " + instruction + "\n\nAnswer: [/INST]\n"
 
@@ -94,7 +94,7 @@ def get_answer(filename: str, question: str, model: str) -> str:
 
     print("type(answer):", type(answer))
 
-    return "Mistral-7B-AWQ answer:\n" + answer
+    return answer
 
 @app.get("/")
 async def root():
@@ -201,11 +201,12 @@ async def create_and_upload(file: UploadFile = File(...)):
             blob.upload_from_filename(file_path_local)
             print(f"(1) File {file.filename} uploaded to bucket.")
 
-            # create an index and upload it to the bucket also
             raw_documents = PyMuPDFLoader(file_path_local).load_and_split()
             print("len(raw_documents):", len(raw_documents))
 
             texts = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0).split_documents(raw_documents)
+            # print("len(texts):", len(texts))
+            # filtered_texts = [text for text in texts if len(text.page_content) >= 400]
             print("len(texts):", len(texts))
 
             db = FAISS.from_documents(texts, GTEEmbeddings())
