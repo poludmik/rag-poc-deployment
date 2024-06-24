@@ -101,8 +101,10 @@ if question := st.chat_input("What is up?"):
     #     img = st.image(image_data)
         print("RESPONSE CONTENT:", json.loads(response.content.decode()))
         try:
-            st.write("**gp-3.5-turbo-0125 answer:**" if not on else "**Mistral-7B-AWQ answer:**")
+            st.write("### gp-3.5-turbo-0125 answer:" if not on else "## Mistral-7B-AWQ answer:")
             st.write(json.loads(response.content.decode())["answer"].replace("\n", "  \n")) # Streamlit write only recognizes 'word  \n' and not 'word\n'... (Uses markdown)
+            st.write("### Retrieved context:")
+            st.write(json.loads(response.content.decode())["combined_docs"].replace("\n", "  \n"))
         except Exception as e:
             st.write("An error occured during answering the question.")
             raise e
