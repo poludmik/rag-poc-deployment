@@ -32,7 +32,9 @@ steps:
     '--memory', 
     '8Gi',
     '--cpu',
-    '2'
+    '2',
+    '--update-secrets',
+    'OPENAI_API_KEY=OPENAI_API_KEY:latest'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'

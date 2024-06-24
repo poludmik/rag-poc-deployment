@@ -58,6 +58,16 @@ if file is not None:
             print(resp.text)
             st.write("An error occured during file upload!")
 
+
+available_models = ["Mistral-7B-AWQ (may be off)", "gpt-3.5-turbo-0125"]
+on = st.sidebar.toggle("LLM selection", False)
+
+if on:
+    st.sidebar.write("**Mistral-7B-AWQ** is now selected. The GPU server may be off.")
+else:
+    st.sidebar.write("**gp-3.5-turbo-0125** is now selected.")
+
+
 if selectbox != st.session_state.selectbox_value:
     # Update session state with new selectbox value
     st.session_state.selectbox_value = selectbox
@@ -84,7 +94,7 @@ else:
 if question := st.chat_input("What is up?"):
     with st.spinner('Please wait...'):
         print("question was:", question)
-        response = requests.post(answer_url, json.dumps({'question': question, 'filename': st.session_state.current_file_name}))
+        response = requests.post(answer_url, json.dumps({'question': question, 'filename': st.session_state.current_file_name, 'model': "mistral" if on else "gpt"}))
         print("response:", response, "type:", type(response))
     # if json.loads(response.content.decode())["is_image"] == True:
     #     image_data = base64.b64decode(json.loads(response.content.decode())["image_str"])
