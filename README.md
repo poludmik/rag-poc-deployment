@@ -3,14 +3,14 @@
 
 ## :dart: Project Goals 
 
-The primary objective of this project is to develop a generative Q&A chatbot capable of answering questions related to financial reports of different companies. The chatbot leverages language models and is grounded in a knowledge base constructed from PDF files of financial reports.
+The primary objective of this project is to develop a generative Q&A chatbot capable of answering questions related to financial reports of different companies. The chatbot leverages language models and is grounded in a knowledge base constructed from PDF files of financial reports. The app enables users to upload new PDFs, ask questions, and receive answers produced by LLMs along with the relevant documents.
 
 ### :sparkles: Features
 
 - **Knowledge Base:** Uses PDF files from financial reports to build a robust knowledge base (new PDFs can be uploaded through the UI).
 - **Grounding Techniques:** Ensures minimal hallucination by grounding responses in retrieved documents with FAISS indexes and `gte-base-en-v1.5` embeddings.
 - **Cloud Deployment:** Utilizes cloud-based SaaS offerings for scalable and robust performance.
-- **Dual Model Backend:** Integrates both `GPT-3.5-Turbo` from OpenAI and `Mistral-7B-Instruct-v0.2-AWQ` for model inference.
+- **Dual Model Backend:** Integrates both `GPT-3.5-Turbo` from OpenAI and open-source `Mistral-7B-Instruct-v0.2-AWQ` for model inference.
 
 ### :wrench: Technologies Used
 
@@ -31,9 +31,9 @@ The primary objective of this project is to develop a generative Q&A chatbot cap
 
 
 #### Requirements and technologies used
-Requirements are separate for backend, frontend and llm inference server. They are stored in the **requirements** folder. The main technologies that were used are:
+Requirements are separate for backend, frontend and llm inference server to minimize the container memory usages. They are stored in the **requirements** folder. The main technologies that were used are:
 - Docker
-- Google Cloud Platform (storage, build/run, compute engine, secret manager)
+- Google Cloud Platform (storage, build/run, compute engine, secret manager, artifact registry, etc.)
 - Python 3.10
 - Streamlit
 - FastAPI
@@ -45,9 +45,8 @@ Requirements are separate for backend, frontend and llm inference server. They a
 The backend server is built using FastAPI and handles the main logic for processing questions, retrieving documents, and calling the appropriate LLM for inference.
 
 #### Key Functions
-
-- **combine_docs:** Combines retrieved documents based on different strategies for improved context. Either the best vector similarity, top-k similarities docs, or Small-to-Big doc expansion.
-- **get_answer:** Retrieves documents from the index, combines them, and generates an answer using the selected LLM.
+- **get_answer:** Retrieves documents from the index on GC Bucket, combines them, and generates an answer using the selected LLM.
+- **combine_docs:** Combines retrieved documents based on different strategies for improved context. Either the best vector similarity, top-k similarities docs, or Small-to-Big doc expansion. For the "1" and "small-to-big" ways of combining, the *get_answer* function will also return the page number of the document, which is also going to be displayed in the frontend.
 - **get_index**: Retrieves the index for a given filename from the Google Cloud Storage bucket.
 
 #### Supported endpoints
@@ -68,7 +67,7 @@ async def answer(request: QuestionRequest):
 
 ### :zap: GPU Inference Server
 
-The GPU inference server is used to run the Mistral-7B-Instruct-v0.2-AWQ model for generating responses. It utilizes `vllm` for efficient model management and inference. Since the model is large and requires a GPU for inference, a separate server is used to offload the computation from the main backend server. This also allows for better resource management and scalability.
+The GPU inference server is used to run the Mistral-7B-Instruct-v0.2-AWQ model for generating responses. It utilizes `vllm` for efficient model management and inference. Since the model is large and requires a GPU for inference, a separate server is used to offload the computation from the main backend server. This also allows for better resource management and scalability (e.g. when multiple LLM servers could be running).
 
 #### Starting the Server
 
@@ -76,6 +75,9 @@ The following simple command is used to start the GPU inference server inside th
 ```sh
 nohup uvicorn --host 0.0.0.0 --port 8000 gpu_inference_server:app &
 ```
+
+#### Supported endpoints
+- **answer**: POST request to `/answer/` with a JSON payload containing the question to ask the Mistral model.
 
 ### :art: Frontend
 
@@ -107,3 +109,9 @@ The `cloudbuild.yaml` file automates the process of building Docker images and d
 
 #### Demo Github Actions Workflow
 A dummy test is set in the .github/workflows folder. The workflow is triggered on push or pull request to the main branch. The workflow runs a test that always passes. This is just a placeholder for the actual tests that could be implemented in the future.
+
+#### Space for improvements
+This is a PoC project and there are many areas that could be improved. Some of them are:
+- Table parsing for financial reports. This could be used to extract more structured information from the reports. Packages like `camelot` or `tabula` could be used for this.
+- Reranking models for the retrieved documents. This could be used to improve the quality of the retrieved documents.
+- More advanced document preprocessing. Techniques like filtering could be used to improve the quality of the retrieved documents.
