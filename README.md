@@ -115,3 +115,4 @@ This is a PoC project and there are many areas that could be improved. Some of t
 - Table parsing for financial reports. This could be used to extract more structured information from the reports. Packages like `camelot` or `tabula` could be used for this.
 - Reranking models for the retrieved documents. This could be used to improve the quality of the retrieved documents.
 - More advanced document preprocessing. Techniques like filtering could be used to improve the quality of the retrieved documents.
+- Other vector storage techniques, vector databases.

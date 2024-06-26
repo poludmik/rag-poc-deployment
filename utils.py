@@ -20,7 +20,7 @@ class GTEEmbeddings:
 
     def embed_query(self, text: str) -> List[float]:
         return self.model.encode([text.lower().replace('\n', ' ')]).tolist()
-    
+
 
 def delete_files_from_local(dir_name: str):
     """Delete all files from the given directory and the directory itself."""

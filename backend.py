@@ -26,6 +26,7 @@ logger.root.handlers[0] = RichHandler(markup=True)
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 0
 STRAT = "small-to-big" # '1' - first best chunk, 'all' - top-k chunks, 'small-to-big' - the top chunk expanded with 2 surrounding chunks
+TOP_K = 3 # retrieve top-k documents
 
 
 def combine_docs(docs: List[str], method: str, folder_pdf: str = None) -> str:
@@ -59,7 +60,7 @@ def get_answer(filename: str, question: str, model: str) -> str:
 
     folder = filename.split(".")[0]
     db = FAISS.load_local(f"faiss_dbs/indexes/{folder}", GTEEmbeddings().embed_documents, allow_dangerous_deserialization=True)
-    retriever = db.as_retriever(k=3)
+    retriever = db.as_retriever(k=TOP_K)
     docs = retriever.invoke(question)
     logger.debug("Metadata: %s, Retrieved %s documents.", docs[0].metadata, len(docs))
 
@@ -74,6 +75,7 @@ def get_answer(filename: str, question: str, model: str) -> str:
         logger.debug("Using GPT model.")
         answer = get_response_from_openai(instruction)
     else:
+        # Two requests to different compute instances to increase reliability if one instance is not available to start
         instruction = "<s>[INST] " + instruction + "\n\nAnswer: [/INST]\n"
         logger.debug("Using Mistral-7B model.")
         response = requests.post("http://34.83.196.140:8000/answer/", 
